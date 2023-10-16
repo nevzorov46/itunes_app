@@ -91,12 +91,17 @@ class SearchSongViewController: UIViewController {
 extension SearchSongViewController: ListOfSongsViewProtocol {
     func showListOfSongs(_ model: [SongModel]) {
         self.model = model
+        
         DispatchQueue.main.async {
             self.activityIndicator.isHidden = true
-            if self.model.isEmpty {
+        }
+        if self.model.isEmpty {
+            DispatchQueue.main.async {
                 self.tableView.isHidden = true
                 self.noResultsLabel.isHidden = false
-            } else {
+            }
+        } else {
+            DispatchQueue.main.async {
                 self.tableView.isHidden = false
                 self.noResultsLabel.isHidden = true
                 self.tableView.reloadData()
