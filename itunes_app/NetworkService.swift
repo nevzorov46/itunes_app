@@ -45,4 +45,6 @@ class NetworkService {
         }
         return nil
     }
+    
+    private init() {}
 }
