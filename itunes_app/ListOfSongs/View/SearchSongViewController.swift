@@ -34,7 +34,7 @@ class SearchSongViewController: UIViewController {
     
     private lazy var activityIndicator: UIActivityIndicatorView = {
         let view = UIActivityIndicatorView()
-        view.isHidden = true
+        view.hidesWhenStopped = true
         return view
     }()
     
@@ -97,7 +97,7 @@ extension SearchSongViewController: ListOfSongsViewProtocol {
         self.model = model
         
         DispatchQueue.main.async {
-            self.activityIndicator.isHidden = true
+            self.activityIndicator.stopAnimating()
         }
         if self.model.isEmpty {
             DispatchQueue.main.async {
@@ -116,7 +116,7 @@ extension SearchSongViewController: ListOfSongsViewProtocol {
 
     func showError(_ message: String) {
         DispatchQueue.main.async {
-            self.activityIndicator.isHidden = true
+            self.activityIndicator.stopAnimating()
             self.tableView.isHidden = true
             self.messageLabel.text = message
             self.messageLabel.isHidden = false
@@ -130,7 +130,6 @@ extension SearchSongViewController: UISearchBarDelegate {
             self.model = []
             self.messageLabel.isHidden = true
             self.tableView.isHidden = true
-            self.activityIndicator.isHidden = false
             self.activityIndicator.startAnimating()
             listOfSongsPresenter?.searchWithText(text)
         }
