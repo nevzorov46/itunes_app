@@ -31,4 +31,8 @@ extension ListOfSongsPresenter: ListOfSongsInteractorOutputProtocol {
     func didRetrieveSongs(_ model: [SongModel]) {
         view?.showListOfSongs(model)
     }
+
+    func didFailToRetrieveSongs(_ error: NetworkError) {
+        view?.showError(error.localizedDescription)
+    }
 }

@@ -21,15 +21,21 @@ protocol ListOfSongsInteractorInputProtocol: AnyObject {
 protocol ListOfSongsInteractorOutputProtocol: AnyObject {
     // INTERACTOR -> PRESENTER
     func didRetrieveSongs(_ model: [SongModel])
+    func didFailToRetrieveSongs(_ error: NetworkError)
 }
 
 class ListOfSongsInteractor: ListOfSongsInteractorInputProtocol {
     weak var presenter: ListOfSongsInteractorOutputProtocol?
     
     func getSongs(_ name: String) {
-        NetworkService.shared.getSongs(name, completionHandler: { result in
-            guard let result = result else { return }
-            self.presenter?.didRetrieveSongs(result.results)
+        NetworkService.shared.getSongs(name, completionHandler: { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let model):
+                self.presenter?.didRetrieveSongs(model.results)
+            case .failure(let error):
+                self.presenter?.didFailToRetrieveSongs(error)
+            }
         })
     }
 }

@@ -7,43 +7,62 @@
 
 import Foundation
 
+enum NetworkError: LocalizedError {
+    case invalidURL
+    case transport(Error)
+    case emptyResponse
+    case decoding(Error)
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidURL: return Resources.errorInvalidURLText
+        case .transport: return Resources.errorTransportText
+        case .emptyResponse: return Resources.errorEmptyResponseText
+        case .decoding: return Resources.errorDecodingText
+        }
+    }
+}
+
 class NetworkService {
     
     static let shared = NetworkService()
     
-    func getSongs(_ song: String, completionHandler: ((ResultModel?) -> Void)?) {
+    func getSongs(_ song: String, completionHandler: ((Result<ResultModel, NetworkError>) -> Void)?) {
         let url = Resources.getSongsURLString
-        let urlString = url + song 
-        if let escapingString = urlString.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlQueryAllowed) {
-            httpGet(escapingString, completionHandler: completionHandler)
+        let urlString = url + song
+        guard let escapingString = urlString.addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlQueryAllowed) else {
+            completionHandler?(.failure(.invalidURL))
+            return
         }
+        httpGet(escapingString, completionHandler: completionHandler)
     }
     
-    private func httpGet<T: Decodable>(_ url: String,  completionHandler : ((T?) -> Void)?) {
-        guard let url = URL(string: url) else { return }
-        let task = URLSession.shared.dataTask(with: url, completionHandler: { [ weak self] (data, _ , error) in
-            guard let this = self else { return }
-            guard error == nil else {
-                print(error!.localizedDescription)
+    private func httpGet<T: Decodable>(_ url: String, completionHandler: ((Result<T, NetworkError>) -> Void)?) {
+        guard let url = URL(string: url) else {
+            completionHandler?(.failure(.invalidURL))
+            return
+        }
+        let task = URLSession.shared.dataTask(with: url, completionHandler: { (data, _, error) in
+            if let error = error {
+                completionHandler?(.failure(.transport(error)))
                 return
             }
-            guard let data = data else { return }
-            let songs: T? = this.parseJSON(data: data)
-            completionHandler?(songs)
-            
+            guard let data = data else {
+                completionHandler?(.failure(.emptyResponse))
+                return
+            }
+            completionHandler?(NetworkService.parseJSON(data: data))
         })
         task.resume()
     }
     
-    private func parseJSON<T: Decodable>(data: Data) -> T? {
+    private static func parseJSON<T: Decodable>(data: Data) -> Result<T, NetworkError> {
         let decoder = JSONDecoder()
-        let type = T.self
         do {
-            return try decoder.decode(type, from: data)
-        } catch let error as NSError {
-            print(String(describing: error))
+            return .success(try decoder.decode(T.self, from: data))
+        } catch {
+            return .failure(.decoding(error))
         }
-        return nil
     }
     
     private init() {}

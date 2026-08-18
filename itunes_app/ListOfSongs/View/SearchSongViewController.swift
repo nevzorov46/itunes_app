@@ -38,10 +38,12 @@ class SearchSongViewController: UIViewController {
         return view
     }()
     
-    private lazy var noResultsLabel: UILabel = {
+    private lazy var messageLabel: UILabel = {
         let label = UILabel()
         label.isHidden = true
         label.font = .systemFont(ofSize: 30, weight: .bold)
+        label.numberOfLines = 0
+        label.textAlignment = .center
         label.text = Resources.noFoundSongText
         return label
     }()
@@ -52,7 +54,7 @@ class SearchSongViewController: UIViewController {
         setupSearchBar()
         setupTableView()
         setupActivityIndicator()
-        setupNoResultsLabel()
+        setupMessageLabel()
     }
     
     private func setupTableView() {
@@ -80,10 +82,12 @@ class SearchSongViewController: UIViewController {
         }
     }
     
-    private func setupNoResultsLabel() {
-        view.addSubview(noResultsLabel)
-        noResultsLabel.snp.makeConstraints {
+    private func setupMessageLabel() {
+        view.addSubview(messageLabel)
+        messageLabel.snp.makeConstraints {
             $0.centerX.centerY.equalToSuperview()
+            $0.left.greaterThanOrEqualToSuperview().offset(20)
+            $0.right.lessThanOrEqualToSuperview().offset(-20)
         }
     }
 }
@@ -98,14 +102,24 @@ extension SearchSongViewController: ListOfSongsViewProtocol {
         if self.model.isEmpty {
             DispatchQueue.main.async {
                 self.tableView.isHidden = true
-                self.noResultsLabel.isHidden = false
+                self.messageLabel.text = Resources.noFoundSongText
+                self.messageLabel.isHidden = false
             }
         } else {
             DispatchQueue.main.async {
                 self.tableView.isHidden = false
-                self.noResultsLabel.isHidden = true
+                self.messageLabel.isHidden = true
                 self.tableView.reloadData()
             }
+        }
+    }
+
+    func showError(_ message: String) {
+        DispatchQueue.main.async {
+            self.activityIndicator.isHidden = true
+            self.tableView.isHidden = true
+            self.messageLabel.text = message
+            self.messageLabel.isHidden = false
         }
     }
 }
@@ -114,7 +128,7 @@ extension SearchSongViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let text = searchBar.text, text.count > 2 {
             self.model = []
-            self.noResultsLabel.isHidden = true
+            self.messageLabel.isHidden = true
             self.tableView.isHidden = true
             self.activityIndicator.isHidden = false
             self.activityIndicator.startAnimating()
