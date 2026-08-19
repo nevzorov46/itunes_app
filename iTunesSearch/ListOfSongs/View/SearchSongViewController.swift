@@ -17,8 +17,10 @@ class SearchSongViewController: UIViewController {
     private lazy var tableView: UITableView = {
         let view = UITableView()
         view.register(SongTableViewCell.self, forCellReuseIdentifier: SongTableViewCell.id)
-        view.backgroundColor = .systemGray
-        view.separatorStyle = .none
+        view.backgroundColor = .systemBackground
+        view.rowHeight = SongTableViewCell.height
+        view.separatorInset = UIEdgeInsets(top: 0, left: 84, bottom: 0, right: 0)
+        view.keyboardDismissMode = .onDrag
         view.delegate = self
         view.dataSource = self
         view.isHidden = true
@@ -28,6 +30,8 @@ class SearchSongViewController: UIViewController {
     private lazy var searchBar: UISearchBar = {
         let view = UISearchBar()
         view.placeholder = Resources.searchBarPlaceholder
+        view.searchBarStyle = .minimal
+        view.autocapitalizationType = .none
         view.delegate = self
         return view
     }()
@@ -41,7 +45,8 @@ class SearchSongViewController: UIViewController {
     private lazy var messageLabel: UILabel = {
         let label = UILabel()
         label.isHidden = true
-        label.font = .systemFont(ofSize: 30, weight: .bold)
+        label.font = .preferredFont(forTextStyle: .title3)
+        label.textColor = .secondaryLabel
         label.numberOfLines = 0
         label.textAlignment = .center
         label.text = Resources.noFoundSongText
@@ -50,7 +55,7 @@ class SearchSongViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGray
+        view.backgroundColor = .systemBackground
         setupSearchBar()
         setupTableView()
         setupActivityIndicator()

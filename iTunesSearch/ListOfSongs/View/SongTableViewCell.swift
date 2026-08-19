@@ -12,37 +12,37 @@ import SDWebImage
 class SongTableViewCell: UITableViewCell {
     
     static let id = "SongTableViewCell"
-    
+    static let artworkSide: CGFloat = 56
+    static let height: CGFloat = 72
+
     private lazy var mainText: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 20, weight: .semibold)
-        label.textColor = .white
+        label.font = .preferredFont(forTextStyle: .headline)
+        label.textColor = .label
+        label.numberOfLines = 1
         return label
     }()
     
     private lazy var additionalText: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 16, weight: .medium)
-        label.textColor = .darkGray
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.textColor = .secondaryLabel
+        label.numberOfLines = 1
         return label
     }()
     
     private lazy var mainImage: UIImageView = {
         let image = UIImageView()
-        image.contentMode = .scaleAspectFit
+        image.contentMode = .scaleAspectFill
+        image.clipsToBounds = true
+        image.layer.cornerRadius = 8
+        image.backgroundColor = .secondarySystemFill
         return image
-    }()
-    
-    private lazy var separator: UIView = {
-        let view = UIView()
-        view.backgroundColor = .lightGray
-        return view
     }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.backgroundColor = .clear
-        self.selectionStyle = .none
+        self.accessoryType = .disclosureIndicator
         setupCell()
     }
     
@@ -50,42 +50,38 @@ class SongTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        mainImage.sd_cancelCurrentImageLoad()
+        mainImage.image = nil
+    }
     
     func configure(with model: SongModel) {
         self.mainText.text = model.trackName
         self.additionalText.text = model.artistName
-        self.mainImage.sd_setImage(with: URL(string: model.artworkUrl100 ?? ""))
+        self.mainImage.sd_setImage(with: model.artworkUrl100.flatMap(URL.init))
     }
     
     private func setupCell() {
-        addSubview(mainImage)
-        addSubview(mainText)
-        addSubview(additionalText)
-        addSubview(separator)
+        contentView.addSubview(mainImage)
+        contentView.addSubview(mainText)
+        contentView.addSubview(additionalText)
         
         mainImage.snp.makeConstraints {
-            $0.width.height.equalTo(60)
-            $0.top.equalToSuperview()
-            $0.left.equalToSuperview()
-            $0.bottom.equalToSuperview()
+            $0.width.height.equalTo(Self.artworkSide)
+            $0.left.equalToSuperview().offset(16)
+            $0.centerY.equalToSuperview()
         }
         
         mainText.snp.makeConstraints {
-            $0.top.equalToSuperview().offset(5)
-            $0.left.equalTo(mainImage.snp.right).offset(5)
+            $0.left.equalTo(mainImage.snp.right).offset(12)
+            $0.right.equalToSuperview().offset(-8)
+            $0.top.equalTo(mainImage).offset(4)
         }
         
         additionalText.snp.makeConstraints {
-            $0.top.equalTo(mainText.snp.bottom).offset(5)
-            $0.left.equalTo(mainText)
-        }
-        
-        separator.snp.makeConstraints {
-            $0.height.equalTo(1)
-            $0.left.equalTo(mainText)
-            $0.right.equalToSuperview()
-            $0.bottom.equalToSuperview().offset(-5)
-            $0.top.equalTo(additionalText.snp.bottom).offset(2)
+            $0.left.right.equalTo(mainText)
+            $0.top.equalTo(mainText.snp.bottom).offset(2)
         }
     }
 }

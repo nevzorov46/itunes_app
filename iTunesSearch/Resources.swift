@@ -10,9 +10,6 @@ import Foundation
 
 class Resources {
     static let getSongsURLString = "https://itunes.apple.com/search?term="
-    static let albumPlaceholderImagePath = "album_placeholder"
-    static let playButtonImagePath = "play_button"
-    static let stopButtonImagePath = "stop_button"
 
     static let searchBarPlaceholder = NSLocalizedString(
         "search.placeholder", comment: "Placeholder of the search bar")

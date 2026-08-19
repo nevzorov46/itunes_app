@@ -19,40 +19,48 @@ class SongDetailsViewController: UIViewController {
 
     lazy private var mainImage: UIImageView = {
         let image = UIImageView()
-        image.contentMode = .scaleAspectFit
-        image.image = UIImage(named: Resources.albumPlaceholderImagePath)
+        image.contentMode = .scaleAspectFill
+        image.backgroundColor = .secondarySystemFill
         image.layer.masksToBounds = true
-        image.layer.cornerRadius = 10
+        image.layer.cornerRadius = 16
         return image
     }()
     
     lazy private var songName: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 20, weight: .medium)
-        label.textColor = .white
-        label.numberOfLines = 0
+        label.font = .systemFont(ofSize: 22, weight: .semibold)
+        label.textColor = .label
+        label.textAlignment = .center
+        label.numberOfLines = 2
         return label
     }()
     
     lazy private var authorName: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 18, weight: .semibold)
-        label.textColor = .black
-        label.numberOfLines = 0
+        label.font = .systemFont(ofSize: 17, weight: .regular)
+        label.textColor = .secondaryLabel
+        label.textAlignment = .center
+        label.numberOfLines = 1
         return label
     }()
     
     lazy private var playButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(named: Resources.playButtonImagePath), for: .normal)
+        button.setImage(Self.icon("play.circle.fill"), for: .normal)
+        button.tintColor = .systemGreen
         button.addTarget(self, action: #selector(play), for: .touchUpInside)
         return button
     }()
     
     
+    private static func icon(_ name: String) -> UIImage? {
+        let config = UIImage.SymbolConfiguration(pointSize: 64, weight: .regular)
+        return UIImage(systemName: name, withConfiguration: config)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGray
+        view.backgroundColor = .systemBackground
         setupView()
         configureView()
 
@@ -80,26 +88,25 @@ class SongDetailsViewController: UIViewController {
         view.addSubview(playButton)
         
         mainImage.snp.makeConstraints {
-            $0.width.height.equalTo(200)
+            $0.width.height.equalTo(240)
             $0.centerX.equalToSuperview()
-            $0.centerY.equalToSuperview().offset(-100)
+            $0.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(60)
         }
         
         songName.snp.makeConstraints {
-            $0.top.equalTo(mainImage.snp.bottom).offset(50)
-            $0.left.equalToSuperview().offset(20)
-            $0.right.equalToSuperview()
+            $0.top.equalTo(mainImage.snp.bottom).offset(32)
+            $0.left.equalToSuperview().offset(24)
+            $0.right.equalToSuperview().offset(-24)
         }
         
         authorName.snp.makeConstraints {
-            $0.top.equalTo(songName.snp.bottom).offset(10)
-            $0.left.equalTo(songName)
-            $0.right.equalToSuperview()
+            $0.top.equalTo(songName.snp.bottom).offset(8)
+            $0.left.right.equalTo(songName)
         }
         
         playButton.snp.makeConstraints {
-            $0.width.height.equalTo(50)
-            $0.bottom.equalToSuperview().offset(-100)
+            $0.width.height.equalTo(64)
+            $0.top.equalTo(authorName.snp.bottom).offset(40)
             $0.centerX.equalToSuperview()
         }
     }
@@ -112,7 +119,7 @@ class SongDetailsViewController: UIViewController {
 extension SongDetailsViewController: SongDetailsViewProtocol {
 
     func playSong(with url: String?) {
-        self.playButton.setImage(UIImage(named: Resources.stopButtonImagePath), for: .normal)
+        self.playButton.setImage(Self.icon("stop.circle.fill"), for: .normal)
         guard let urlString = url, let url = URL(string: urlString) else { return }
         player.removeAllItems()
         player.insert(AVPlayerItem(url: url), after: nil)
@@ -120,7 +127,7 @@ extension SongDetailsViewController: SongDetailsViewProtocol {
     }
     
     func stopSong() {
-        self.playButton.setImage(UIImage(named: Resources.playButtonImagePath), for: .normal)
+        self.playButton.setImage(Self.icon("play.circle.fill"), for: .normal)
         player.removeAllItems()
     }
 }
