@@ -7,11 +7,6 @@
 
 import Foundation
 
-protocol ListOfSongsInteractorProtocol {
-    var presenter: ListOfSongsPresenter? { get set }
-    func getSongs(_ name: String)
-}
-
 protocol ListOfSongsInteractorInputProtocol: AnyObject {
     // PRESENTER -> INTERACTOR
     var presenter: ListOfSongsInteractorOutputProtocol? { get set}
@@ -29,18 +24,27 @@ class ListOfSongsInteractor: ListOfSongsInteractorInputProtocol {
     weak var presenter: ListOfSongsInteractorOutputProtocol?
 
     private let network: NetworkServiceProtocol
+    private var currentRequest: NetworkCancellable?
 
     init(network: NetworkServiceProtocol = NetworkService.shared) {
         self.network = network
     }
 
+    deinit {
+        currentRequest?.cancel()
+    }
+
     func getSongs(_ name: String) {
-        network.getSongs(name, completionHandler: { [weak self] result in
+        currentRequest?.cancel()
+        currentRequest = network.getSongs(name, completionHandler: { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 switch result {
                 case .success(let model):
                     self.presenter?.didRetrieveSongs(model.results)
+                case .failure(.cancelled):
+                    // A newer search replaced this one — its answer is no longer relevant.
+                    break
                 case .failure(let error):
                     self.presenter?.didFailToRetrieveSongs(error)
                 }
@@ -48,4 +52,3 @@ class ListOfSongsInteractor: ListOfSongsInteractorInputProtocol {
         })
     }
 }
-
