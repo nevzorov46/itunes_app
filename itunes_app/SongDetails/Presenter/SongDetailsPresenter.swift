@@ -16,7 +16,7 @@ protocol SongDetailsPresenterProtocol: AnyObject {
 
 
 class SongDetailsPresenter: SongDetailsPresenterProtocol {
-    var view: SongDetailsViewProtocol?
+    weak var view: SongDetailsViewProtocol?
     var song: String?
     
     var isPlaying = false

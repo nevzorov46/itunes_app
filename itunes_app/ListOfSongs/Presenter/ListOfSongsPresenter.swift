@@ -19,7 +19,7 @@ protocol ListOfSongsPresenterProtocol: AnyObject {
 
 
 class ListOfSongsPresenter: ListOfSongsPresenterProtocol {
-    var view: ListOfSongsViewProtocol?
+    weak var view: ListOfSongsViewProtocol?
     var interactor: ListOfSongsInteractorInputProtocol?
     var router: ListOfSongsRouterProtocol?
 
