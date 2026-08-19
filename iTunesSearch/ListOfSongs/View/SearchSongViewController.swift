@@ -119,6 +119,16 @@ extension SearchSongViewController: ListOfSongsViewProtocol {
         }
     }
 
+    func showInitialState() {
+        DispatchQueue.main.async {
+            self.model = []
+            self.activityIndicator.stopAnimating()
+            self.tableView.isHidden = true
+            self.messageLabel.isHidden = true
+            self.tableView.reloadData()
+        }
+    }
+
     func showError(_ message: String) {
         DispatchQueue.main.async {
             self.activityIndicator.stopAnimating()
@@ -130,6 +140,12 @@ extension SearchSongViewController: ListOfSongsViewProtocol {
 }
 
 extension SearchSongViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText.isEmpty {
+            listOfSongsPresenter?.clearSearch()
+        }
+    }
+
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let text = searchBar.text, text.count > 2 {
             self.model = []

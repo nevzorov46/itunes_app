@@ -13,4 +13,5 @@ protocol ListOfSongsViewProtocol: AnyObject {
     var listOfSongsPresenter: ListOfSongsPresenterProtocol? { get set }
     func showListOfSongs(_ model: [SongModel])
     func showError(_ message: String)
+    func showInitialState()
 }

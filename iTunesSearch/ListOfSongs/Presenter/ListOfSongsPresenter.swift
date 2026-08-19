@@ -15,6 +15,7 @@ protocol ListOfSongsPresenterProtocol: AnyObject {
     // VIEW -> PRESENTER
     func searchWithText(_ text: String)
     func didSelectSong(at index: Int)
+    func clearSearch()
 }
 
 
@@ -27,6 +28,11 @@ class ListOfSongsPresenter: ListOfSongsPresenterProtocol {
 
     func searchWithText(_ text: String) {
         interactor?.getSongs(text)
+    }
+
+    func clearSearch() {
+        songs = []
+        view?.showInitialState()
     }
 
     func didSelectSong(at index: Int) {
