@@ -69,6 +69,19 @@ class SongDetailsViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         player.removeAllItems()
+        Self.deactivateAudioSession()
+    }
+
+    /// Without the playback category the preview stays silent
+    /// when the ringer switch is off.
+    private static func activateAudioSession() {
+        let session = AVAudioSession.sharedInstance()
+        try? session.setCategory(.playback)
+        try? session.setActive(true)
+    }
+
+    private static func deactivateAudioSession() {
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
     
     private func configureView() {
@@ -121,6 +134,7 @@ extension SongDetailsViewController: SongDetailsViewProtocol {
     func playSong(with url: String?) {
         self.playButton.setImage(Self.icon("stop.circle.fill"), for: .normal)
         guard let urlString = url, let url = URL(string: urlString) else { return }
+        Self.activateAudioSession()
         player.removeAllItems()
         player.insert(AVPlayerItem(url: url), after: nil)
         player.play()
@@ -129,6 +143,7 @@ extension SongDetailsViewController: SongDetailsViewProtocol {
     func stopSong() {
         self.playButton.setImage(Self.icon("play.circle.fill"), for: .normal)
         player.removeAllItems()
+        Self.deactivateAudioSession()
     }
 }
 	
