@@ -24,15 +24,21 @@ class ListOfSongsPresenter: ListOfSongsPresenterProtocol {
     var interactor: ListOfSongsInteractorInputProtocol?
     var router: ListOfSongsRouterProtocol?
 
+    private static let minQueryLength = 3
+
     private var songs: [SongModel] = []
 
     func searchWithText(_ text: String) {
-        interactor?.getSongs(text)
+        let query = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard query.count >= Self.minQueryLength else { return }
+        songs = []
+        view?.render(.loading)
+        interactor?.getSongs(query)
     }
 
     func clearSearch() {
         songs = []
-        view?.showInitialState()
+        view?.render(.initial)
     }
 
     func didSelectSong(at index: Int) {
@@ -44,11 +50,11 @@ class ListOfSongsPresenter: ListOfSongsPresenterProtocol {
 extension ListOfSongsPresenter: ListOfSongsInteractorOutputProtocol {
     func didRetrieveSongs(_ model: [SongModel]) {
         songs = model
-        view?.showListOfSongs(model)
+        view?.render(model.isEmpty ? .empty : .loaded(model))
     }
 
     func didFailToRetrieveSongs(_ error: NetworkError) {
         songs = []
-        view?.showError(error.localizedDescription)
+        view?.render(.failed(error.localizedDescription))
     }
 }

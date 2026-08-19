@@ -98,34 +98,29 @@ class SearchSongViewController: UIViewController {
 }
 
 extension SearchSongViewController: ListOfSongsViewProtocol {
-    // The presenter calls these methods on the main thread only.
-    func showListOfSongs(_ model: [SongModel]) {
-        self.model = model
-        activityIndicator.stopAnimating()
-        if model.isEmpty {
-            tableView.isHidden = true
-            messageLabel.text = Resources.noFoundSongText
-            messageLabel.isHidden = false
-        } else {
-            tableView.isHidden = false
-            messageLabel.isHidden = true
-            tableView.reloadData()
+    // The presenter calls this on the main thread only.
+    func render(_ state: ListOfSongsState) {
+        switch state {
+        case .initial:
+            show(songs: [], table: false, message: nil, loading: false)
+        case .loading:
+            show(songs: [], table: false, message: nil, loading: true)
+        case .loaded(let songs):
+            show(songs: songs, table: true, message: nil, loading: false)
+        case .empty:
+            show(songs: [], table: false, message: Resources.noFoundSongText, loading: false)
+        case .failed(let text):
+            show(songs: [], table: false, message: text, loading: false)
         }
     }
 
-    func showInitialState() {
-        model = []
-        activityIndicator.stopAnimating()
-        tableView.isHidden = true
-        messageLabel.isHidden = true
+    private func show(songs: [SongModel], table: Bool, message: String?, loading: Bool) {
+        model = songs
         tableView.reloadData()
-    }
-
-    func showError(_ message: String) {
-        activityIndicator.stopAnimating()
-        tableView.isHidden = true
+        tableView.isHidden = !table
         messageLabel.text = message
-        messageLabel.isHidden = false
+        messageLabel.isHidden = message == nil
+        loading ? activityIndicator.startAnimating() : activityIndicator.stopAnimating()
     }
 }
 
@@ -137,13 +132,7 @@ extension SearchSongViewController: UISearchBarDelegate {
     }
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        if let text = searchBar.text, text.count > 2 {
-            self.model = []
-            self.messageLabel.isHidden = true
-            self.tableView.isHidden = true
-            self.activityIndicator.startAnimating()
-            listOfSongsPresenter?.searchWithText(text)
-        }
+        listOfSongsPresenter?.searchWithText(searchBar.text ?? "")
     }
 }
 
