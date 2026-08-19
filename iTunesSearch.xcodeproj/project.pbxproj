@@ -155,7 +155,7 @@
 			path = Router;
 			sourceTree = "<group>";
 		};
-		848185092ADD2E4A00AC7A9E /* Supproting Files */ = {
+		848185092ADD2E4A00AC7A9E /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
 				84B1B5BA2AD8000100282ADD /* AppDelegate.swift */,
@@ -164,7 +164,7 @@
 				84B1B5C52AD8000300282ADD /* LaunchScreen.storyboard */,
 				84B1B5F02AD8000300282ADD /* Localizable.xcstrings */,
 			);
-			path = "Supproting Files";
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		84B1B5AE2AD8000100282ADD = {
@@ -188,7 +188,7 @@
 		84B1B5B92AD8000100282ADD /* iTunesSearch */ = {
 			isa = PBXGroup;
 			children = (
-				848185092ADD2E4A00AC7A9E /* Supproting Files */,
+				848185092ADD2E4A00AC7A9E /* Supporting Files */,
 				848184EC2ADC6EEA00AC7A9E /* ListOfSongs */,
 				848184FB2ADC72A700AC7A9E /* SongDetails */,
 				846F4ED02AD84AFE00D9094B /* NetworkService.swift */,
