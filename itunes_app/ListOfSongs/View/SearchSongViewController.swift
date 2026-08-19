@@ -152,8 +152,6 @@ extension SearchSongViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = model[indexPath.row]
-        let vc = SongDetailsRouter.createDetailsView(item)
-        self.present(vc, animated: true)
+        listOfSongsPresenter?.didSelectSong(at: indexPath.row)
     }
 }

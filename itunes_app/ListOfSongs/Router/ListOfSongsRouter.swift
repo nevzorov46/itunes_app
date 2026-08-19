@@ -8,11 +8,15 @@
 import Foundation
 import UIKit
 
-protocol ListOfSongsRouterProtocol {
+protocol ListOfSongsRouterProtocol: AnyObject {
     static func createStartView() -> UIViewController
+    // PRESENTER -> ROUTER
+    func showSongDetails(for song: SongModel)
 }
 
 class ListOfSongsRouter: ListOfSongsRouterProtocol {
+    weak var viewController: UIViewController?
+
     static func createStartView() -> UIViewController {
         let vc = SearchSongViewController()
         let presenter: ListOfSongsPresenterProtocol & ListOfSongsInteractorOutputProtocol = ListOfSongsPresenter()
@@ -23,6 +27,12 @@ class ListOfSongsRouter: ListOfSongsRouterProtocol {
         presenter.interactor = interactor
         presenter.router = router
         interactor.presenter = presenter
+        router.viewController = vc
         return vc
+    }
+
+    func showSongDetails(for song: SongModel) {
+        let detailsView = SongDetailsRouter.createDetailsView(song)
+        viewController?.present(detailsView, animated: true)
     }
 }
