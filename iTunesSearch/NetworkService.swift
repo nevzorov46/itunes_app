@@ -23,7 +23,11 @@ enum NetworkError: LocalizedError {
     }
 }
 
-class NetworkService {
+protocol NetworkServiceProtocol {
+    func getSongs(_ song: String, completionHandler: ((Result<ResultModel, NetworkError>) -> Void)?)
+}
+
+class NetworkService: NetworkServiceProtocol {
     
     static let shared = NetworkService()
     
@@ -65,5 +69,4 @@ class NetworkService {
         }
     }
     
-    private init() {}
 }

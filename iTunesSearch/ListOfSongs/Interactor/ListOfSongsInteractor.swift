@@ -19,22 +19,31 @@ protocol ListOfSongsInteractorInputProtocol: AnyObject {
 }
 
 protocol ListOfSongsInteractorOutputProtocol: AnyObject {
-    // INTERACTOR -> PRESENTER
+    // INTERACTOR -> PRESENTER. Always called on the main thread,
+    // so the presenter and the view stay main-thread only.
     func didRetrieveSongs(_ model: [SongModel])
     func didFailToRetrieveSongs(_ error: NetworkError)
 }
 
 class ListOfSongsInteractor: ListOfSongsInteractorInputProtocol {
     weak var presenter: ListOfSongsInteractorOutputProtocol?
-    
+
+    private let network: NetworkServiceProtocol
+
+    init(network: NetworkServiceProtocol = NetworkService.shared) {
+        self.network = network
+    }
+
     func getSongs(_ name: String) {
-        NetworkService.shared.getSongs(name, completionHandler: { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let model):
-                self.presenter?.didRetrieveSongs(model.results)
-            case .failure(let error):
-                self.presenter?.didFailToRetrieveSongs(error)
+        network.getSongs(name, completionHandler: { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                switch result {
+                case .success(let model):
+                    self.presenter?.didRetrieveSongs(model.results)
+                case .failure(let error):
+                    self.presenter?.didFailToRetrieveSongs(error)
+                }
             }
         })
     }

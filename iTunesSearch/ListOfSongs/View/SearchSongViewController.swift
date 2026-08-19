@@ -98,44 +98,34 @@ class SearchSongViewController: UIViewController {
 }
 
 extension SearchSongViewController: ListOfSongsViewProtocol {
+    // The presenter calls these methods on the main thread only.
     func showListOfSongs(_ model: [SongModel]) {
         self.model = model
-        
-        DispatchQueue.main.async {
-            self.activityIndicator.stopAnimating()
-        }
-        if self.model.isEmpty {
-            DispatchQueue.main.async {
-                self.tableView.isHidden = true
-                self.messageLabel.text = Resources.noFoundSongText
-                self.messageLabel.isHidden = false
-            }
+        activityIndicator.stopAnimating()
+        if model.isEmpty {
+            tableView.isHidden = true
+            messageLabel.text = Resources.noFoundSongText
+            messageLabel.isHidden = false
         } else {
-            DispatchQueue.main.async {
-                self.tableView.isHidden = false
-                self.messageLabel.isHidden = true
-                self.tableView.reloadData()
-            }
+            tableView.isHidden = false
+            messageLabel.isHidden = true
+            tableView.reloadData()
         }
     }
 
     func showInitialState() {
-        DispatchQueue.main.async {
-            self.model = []
-            self.activityIndicator.stopAnimating()
-            self.tableView.isHidden = true
-            self.messageLabel.isHidden = true
-            self.tableView.reloadData()
-        }
+        model = []
+        activityIndicator.stopAnimating()
+        tableView.isHidden = true
+        messageLabel.isHidden = true
+        tableView.reloadData()
     }
 
     func showError(_ message: String) {
-        DispatchQueue.main.async {
-            self.activityIndicator.stopAnimating()
-            self.tableView.isHidden = true
-            self.messageLabel.text = message
-            self.messageLabel.isHidden = false
-        }
+        activityIndicator.stopAnimating()
+        tableView.isHidden = true
+        messageLabel.text = message
+        messageLabel.isHidden = false
     }
 }
 
