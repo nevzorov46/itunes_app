@@ -86,12 +86,10 @@ class SongDetailsViewController: UIViewController {
     
     private func configureView() {
         guard let model = model else { return }
-        self.songName.text = model.trackName
+        self.songName.text = model.displayTitle
         self.authorName.text = model.artistName
         
-        if let imageURL = model.artworkUrl100 {
-            self.mainImage.sd_setImage(with: URL(string: imageURL))
-        }
+        self.mainImage.sd_setImage(with: model.largeArtworkURL)
     }
     
     private func setupView() {

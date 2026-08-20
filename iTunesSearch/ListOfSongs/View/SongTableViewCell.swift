@@ -57,9 +57,9 @@ class SongTableViewCell: UITableViewCell {
     }
     
     func configure(with model: SongModel) {
-        self.mainText.text = model.trackName
+        self.mainText.text = model.displayTitle
         self.additionalText.text = model.artistName
-        self.mainImage.sd_setImage(with: model.artworkUrl100.flatMap(URL.init))
+        self.mainImage.sd_setImage(with: model.thumbnailURL)
     }
     
     private func setupCell() {
